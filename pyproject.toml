@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "easyfatt-db-connector"
+version = "0.1.0"
+description = ""
+authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "easyfatt_db_connector", from = "./src/"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+requests = "^2.30.0"
+fdb = "^2.0.2"
+sqlalchemy-firebird = "^0.8.0"
+sqlalchemy = "^2.0.12"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+poethepoet = "^0.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poe.tasks.format]
+help = "Format the code"
+sequence = [
+    { cmd = "black -l 100 src/" },
+]
