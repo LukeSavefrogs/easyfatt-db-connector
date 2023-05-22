@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import logging
 from typing import Literal
 
 from pathlib import Path
@@ -14,8 +15,16 @@ from easyfatt_db_connector.constants import DEFAULT_FIREBIRD_LOCATION
 RELEASE_URL = "https://api.github.com/repos/FirebirdSQL/firebird/releases"
 PROCESSOR_ARCHITECTURE = 32 << bool(sys.maxsize >> 32)
 
+logger = logging.getLogger(__name__)
+
+__all__ = ["get_available_releases", "download"]
 
 def get_available_releases() -> list[str]:
+    """ Retrieves the available releases from the FirebirdSQL repository.
+
+    Returns:
+        releases (list[str]): List of available release tags.
+    """
     response = requests.get(RELEASE_URL)
 
     return [
@@ -23,7 +32,8 @@ def get_available_releases() -> list[str]:
         for release in response.json()
         if list(
             filter(
-                lambda a: "_x64_embed.zip" in a["name"] or "_Win32_embed.zip" in a["name"],
+                lambda a: "_x64_embed.zip" in a["name"]
+                or "_Win32_embed.zip" in a["name"],
                 release["assets"],
             )
         )
@@ -43,42 +53,63 @@ def download(
         architecture (Literal[32, 64] | None, optional): Desired processor architecture (32 or 64 bit, None for automatic discovery). Defaults to None.
 
     Raises:
-        Exception: _description_
+        Exception: No available releases were found
+        Exception: Release '{tag_name}' not found. Available releases are {available_releases}.
+        Exception: Unexpected number of downloads found: {download_no}. Expected 1.
 
     Returns:
         firebird (Path): Path to the Firebase Embedded folder
     """
-    release_name = tag_name if tag_name is not None else get_available_releases()[0]
+    available_releases = get_available_releases()
+
+    desired_architecture = (
+        architecture if architecture is not None else PROCESSOR_ARCHITECTURE
+    )
+
+    if len(available_releases) == 0:
+        raise Exception("No available releases were found")
+    elif tag_name is not None and tag_name not in available_releases:
+        raise Exception(f"Release '{tag_name}' not found. Available releases are {', '.join(available_releases)}.")
+
+    release_name = tag_name if tag_name is not None else available_releases[0]
     release = requests.get(
         f"https://api.github.com/repos/FirebirdSQL/firebird/releases/tags/{release_name}"
     ).json()
     assets = release["assets"]
 
-    desired_architecture = architecture if architecture is not None else PROCESSOR_ARCHITECTURE
-
+    # Retrieve the download url for the desired architecture
     remote_package_urls = [
         asset["browser_download_url"]
         for asset in assets
-        if ("_x64_embed.zip" if desired_architecture == 64 else "_Win32_embed.zip") in asset["name"]
+        if ("_x64_embed.zip" if desired_architecture == 64 else "_Win32_embed.zip")
+        in asset["name"]
     ]
 
     if len(remote_package_urls) != 1:
-        raise Exception(f"Unexpected number of downloads found: {', '.join(remote_package_urls)}")
+        raise Exception(
+            f"Unexpected number of downloads found: {', '.join(remote_package_urls)}. Expected 1."
+        )
 
-    # Download and save the zip file
-    zip_file_path: Path = firebird_path / str(urlparse(remote_package_urls[0]).path).split("/")[-1]
+    zip_file_path: Path = (
+        firebird_path / str(urlparse(remote_package_urls[0]).path).split("/")[-1]
+    )
     version_file = firebird_path / "version.txt"
 
-    if version_file.exists() and version_file.read_text() == zip_file_path.stem:
-        return firebird_path
+    try:
+        firebird_path.mkdir(parents=True)
+    except FileExistsError:
+        # Check if version is the same
+        if version_file.exists() and version_file.read_text() == zip_file_path.stem:
+            return firebird_path
 
-    # Remove all old files
-    for child in firebird_path.glob("*"):
-        if child.is_dir():
-            shutil.rmtree(child)
-        else:
-            child.unlink()
+        # Remove all old files
+        for child in firebird_path.glob("*"):
+            if child.is_dir():
+                shutil.rmtree(child)
+            else:
+                child.unlink()
 
+    # Download the archive and extract it
     response = requests.get(remote_package_urls[0], allow_redirects=True)
     with open(zip_file_path, "wb") as zip_file:
         zip_file.write(response.content)
@@ -86,6 +117,7 @@ def download(
     shutil.unpack_archive(zip_file_path, firebird_path)
     zip_file_path.unlink()
 
+    # Write the version file
     version_file.write_text(zip_file_path.stem)
 
     return firebird_path
@@ -93,5 +125,5 @@ def download(
 
 if __name__ == "__main__":
     print(download())
-    print(download("R2_5_8"))
+    # print(download("R2_5_8"))
     # print(download("R2_5_9", architecture=32))
