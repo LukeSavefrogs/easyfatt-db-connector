@@ -8,7 +8,7 @@ import shutil
 from fdb.ibase import charset_map
 
 import sqlalchemy
-import sqlalchemy_firebird
+# import sqlalchemy_firebird
 
 from easyfatt_db_connector.core.exceptions import FirebirdClientError
 from easyfatt_db_connector.constants import (
@@ -20,6 +20,7 @@ from easyfatt_db_connector.constants import (
 
 
 class EasyfattDB(object):
+    """ Implementation of the `EasyfattDBGeneric` class using the `sqlalchemy` library. """
     archive_path: Path
     firebird_path: Path
 
@@ -46,8 +47,16 @@ class EasyfattDB(object):
         """
         self.archive_path = Path(archive_path).expanduser().resolve()
         self.firebird_path = Path(firebird_path).expanduser().resolve()
+        
+        if db_charset is None:
+            self.db_charset = charset_map[None]
 
-        if db_charset not in charset_map.keys():
+        elif db_charset.upper() in charset_map.keys():
+            self.db_charset = charset_map[db_charset]
+            
+        elif db_charset in charset_map.values():
+            self.db_charset = db_charset
+        else:
             supported_charsets = ", ".join([str(charset) for charset in charset_map.keys()])
 
             raise FirebirdClientError(
@@ -56,7 +65,6 @@ class EasyfattDB(object):
 
         self.db_username = db_user
         self.db_password = db_password
-        self.db_charset = db_charset
 
         # Check if Firebase Embedded is installed
         if not self.firebird_path.exists():
@@ -75,6 +83,7 @@ class EasyfattDB(object):
             database=str(self.archive_path.resolve() if database_path is None else database_path.resolve()),
             query={
                 "fb_library_name": str(self.firebird_path / "fbembed.dll"),
+                "charset": self.db_charset,
                 # "user": self.db_username if username is None else username
             }
         )
@@ -125,7 +134,8 @@ class EasyfattDB(object):
 
 
 if __name__ == "__main__":
+    print("Start")
     database_path = Path("~/Documents/Danea Easyfatt/TestArchivio.eft").expanduser()
 
     db = EasyfattDB(database_path)
-    print(f"- Is database locked? {db.is_locked()}")
+    print(f"- Engine: {db.create_engine()}")
