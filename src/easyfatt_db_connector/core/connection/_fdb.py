@@ -1,5 +1,7 @@
 from contextlib import contextmanager
+import os
 import shutil
+import tempfile
 from typing import Any, Generator, Literal, Optional
 from pathlib import Path
 
@@ -35,25 +37,28 @@ class EasyfattFDB(EasyfattDBGeneric):
         Raises:
             FirebirdClientError: If the database is locked.
         """
-        if self.is_locked():
-            raise FirebirdClientError(
-                f"The database '{self.archive_path}' is locked. Close Easyfatt and try again."
-            )
+        # if self.is_locked():
+        #     raise FirebirdClientError(
+        #         f"The database '{self.archive_path}' is locked. Close Easyfatt and try again."
+        #     )
         
-        temp_database = Path(f"{self.archive_path}.tmp~")
+        handle, path = tempfile.mkstemp(prefix=f"{self.archive_path.stem}-", suffix=".eft.tmp~")
+        os.close(handle)
+
+        temp_database = Path(path)
         shutil.copy(self.archive_path, temp_database)
 
         connection = None
         try:
             connection: TypedFDBConnection = fdb.connect(
-                database=str(self.archive_path),
+                database=str(temp_database),
                 user=self.db_username,
                 password=self.db_password if self.db_password else None,
                 charset=self.db_charset,
                 fb_library_name=str(self.firebird_path / "fbembed.dll"),
             )
             yield connection
-        
+
         except Exception:
             raise
 
@@ -61,8 +66,7 @@ class EasyfattFDB(EasyfattDBGeneric):
             if connection is not None:
                 connection.close()
 
-            if temp_database is not None:
-                temp_database.unlink(missing_ok=True)
+            temp_database.unlink(missing_ok=True)
 
 
 
