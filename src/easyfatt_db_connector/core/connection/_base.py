@@ -139,11 +139,13 @@ class EasyfattDBGeneric(object):
             
             print(f"SQLCODE: {sqlcode} (error: {error_message})")
             
-            if "codec can't decode byte" in error_message or "lock manager" in error_message:
+            if "codec can't decode byte" in error_message or "lock manager error" in error_message:
                 return True
             elif sqlcode == -902: # File used by another process (Error while connecting to database:\n- SQLCODE: -902\n- I/O error during "CreateFile (open)" operation for file "C:\\USERS\\{...}.EFT"\n- Error while trying to open file)
                 return True
             else:
                 raise
+        except Exception as e:
+            raise
         else:
             return False
