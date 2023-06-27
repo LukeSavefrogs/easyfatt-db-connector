@@ -2,6 +2,22 @@
 
 ## Development
 
+### Note per Windows
+
+#### Build con PyInstaller
+
+In fase di build con PyInstaller (sia in modalità `--onefile` che `--onedir`) è necessario tenere in considerazione le seguenti note:
+
+- **Non usare mai UPX** se disponibile (a causa di un bug che porta la DLL `fbclient.dll` a crashare in modo randomico impedendo la connessione al DB). Se possibile includere sempre `--noupx` tra gli argomenti di build.
+- Aggiungere `--collect-all sqlalchemy_firebird` tra gli argomenti di build per evitare che PyInstaller non includa il modulo `fdb` e `firebird-driver` (che non vengono rilevato automaticamente).
+
+### Python
+
+```shell
+poetry config virtualenvs.prefer-active-python true
+poetry env use $(pyenv which python)
+```
+
 ### Database
 
 1. Installare [**Firebird SQL** 2.5.9](https://firebirdsql.org/en/firebird-2-5/) (selezionare la versione "_64-bit Classic, Superclassic & Superserver_")
