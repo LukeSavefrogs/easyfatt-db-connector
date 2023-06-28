@@ -7,7 +7,7 @@ from pathlib import Path
 
 import fdb
 
-from easyfatt_db_connector.core.exceptions import FirebirdClientError
+from easyfatt_db_connector.core.exceptions import DatabaseLockedError
 from easyfatt_db_connector.core.connection._base import EasyfattDBGeneric
 
 class TypedFDBConnection(fdb.Connection):
@@ -24,6 +24,45 @@ class TypedFDBConnection(fdb.Connection):
 
 
 class EasyfattFDB(EasyfattDBGeneric):
+    def _connect(self, database_path: Path) -> TypedFDBConnection:
+        """ Wrapper around `fdb.connect` which handles some edge cases.
+
+        Args:
+            database_path (Path): The path to the database file.
+
+        Raises:
+            FirebirdClientError: If the database is locked.
+        """
+        try:
+            # Use `WIN1252` instead of `UTF8` to fix error "SQLCODE: -204 block size exceeds implementation restriction"
+            # See https://stackoverflow.com/q/40170882/8965861
+            return fdb.connect(
+                database=str(database_path),
+                user=self.db_username,
+                password=self.db_password if self.db_password else None,
+                charset=self.db_charset,
+                fb_library_name=str(self.firebird_path / "fbembed.dll"),
+            )
+        except (fdb.DatabaseError, UnicodeDecodeError) as e:
+            error_message = str(e)
+
+            try:
+                sqlcode = e.args[1]
+            except:
+                sqlcode = None
+            
+            if (
+                ("codec can't decode byte" in error_message) or   # Not sure why, but sometimes this error pops up when the database is locked
+                ("lock manager error" in error_message) or        # Database locked
+                (sqlcode == -902)                                 # Database file used by another process
+            ):
+                raise DatabaseLockedError(
+                    f"The database '{self.archive_path}' is locked. Close Easyfatt and try again."
+                )
+            
+            # Error is not handled, propagate it to the caller
+            raise
+        
     """ Implementation of the `EasyfattDBGeneric` class using the `fdb` library. """
     @contextmanager
     def connect(self) -> Generator[TypedFDBConnection, None, None]:
@@ -36,12 +75,7 @@ class EasyfattFDB(EasyfattDBGeneric):
         
         Raises:
             FirebirdClientError: If the database is locked.
-        """
-        # if self.is_locked():
-        #     raise FirebirdClientError(
-        #         f"The database '{self.archive_path}' is locked. Close Easyfatt and try again."
-        #     )
-        
+        """     
         handle, path = tempfile.mkstemp(prefix=f"{self.archive_path.stem}-", suffix=".eft.tmp~")
         os.close(handle)
 
@@ -50,13 +84,7 @@ class EasyfattFDB(EasyfattDBGeneric):
 
         connection = None
         try:
-            connection: TypedFDBConnection = fdb.connect(
-                database=str(temp_database),
-                user=self.db_username,
-                password=self.db_password if self.db_password else None,
-                charset=self.db_charset,
-                fb_library_name=str(self.firebird_path / "fbembed.dll"),
-            )
+            connection: TypedFDBConnection = self._connect(temp_database)
             yield connection
 
         except Exception:
@@ -74,7 +102,7 @@ if __name__ == "__main__":
     database_path = Path("~/Documents/Danea Easyfatt/TestArchivio.eft").expanduser()
 
     db = EasyfattFDB(database_path)
-    print(f"- Is database locked: {db.is_locked()}")
+    # print(f"- Is database locked: {db.is_locked()}")
     print(f"- Connection string : '{db.get_connection_string()}'")
 
     with db.connect() as connection:
@@ -86,3 +114,5 @@ if __name__ == "__main__":
 
         cur = connection.cursor()
         print(cur.execute("select * from RDB$ROLES").fetchall())
+    
+    print(f"The end.")

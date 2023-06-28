@@ -7,3 +7,6 @@ class EasyfattDBConnectorError(Exception):
 
 class FirebirdClientError(EasyfattDBConnectorError):
     """An error concerning the Firebird client."""
+
+class DatabaseLockedError(EasyfattDBConnectorError):
+    """ Error raised when the Firebird database is locked. """
