@@ -1,5 +1,51 @@
 # easyfatt-db-connector
 
+## Utilizzo
+
+
+### Database: download driver Firebird (_prerequisito_)
+
+Per connettersi al DB di Easyfatt è necessario scaricare il driver Firebird `Firebird-{version}-embed.zip` (versione [2.5.8](https://github.com/FirebirdSQL/firebird/releases/tag/R2_5_8) o [2.5.9](https://github.com/FirebirdSQL/firebird/releases/tag/R2_5_9)) e specificarne il percorso.
+
+```python
+from easyfatt_db_connector.core.connection import EasyfattFDB
+
+database = EasyfattFDB(archive_path=database_path, firebird_path="./firebird-driver")
+```
+
+Questa procedura può essere automatizzata impostando il parametro `download_firebird` a `True` (di default è `False`). E' possibile controllare il percorso di download del driver tramite il parametro `firebird_path` (di default `~/.cache/firebird-driver/`).
+
+```python
+from easyfatt_db_connector.core.connection import EasyfattFDB
+
+database = EasyfattFDB(archive_path=database_path, download_firebird=True)
+```
+
+> **ATTENZIONE**
+>
+> L'opzione `download_firebird` è impostata di default a `False` per evitare che il programma effettui download in ambienti di Produzione.
+>
+> Se questo è il comportamento desiderato impostare il parametro a `True`.
+
+### Database: connessione e query
+
+In fase di connessione al DB l'istanza `EasyfattFDB` provvederà a fare una copia del database in una cartella temporanea (ed alla sua eliminazione ad operazioni terminate) così da permettere l'utilizzo anche con Easyfatt in esecuzione.
+
+```python
+from easyfatt_db_connector.core.connection import EasyfattFDB
+
+database = EasyfattFDB(archive_path=database_path, download_firebird=True)
+
+with database.connect() as connection:
+    customers = [dict(item) for item in connection.cursor().execute('''
+        SELECT anag."CodAnagr", ANAG."Nome", ANAG."Indirizzo", ANAG."Cap", ANAG."Citta", ANAG."Prov", ANAG."Regione", IIF(naz."NomeNazionePrint" IS NULL, 'Italia', naz."NomeNazionePrint") AS Nazione
+        FROM "TAnagrafica" AS anag
+        LEFT JOIN "TNazioni" naz ON ANAG."Nazione" = naz."NomeNazione";
+    ''').fetchallmap()]
+
+    print(customers)
+```
+
 ## Development
 
 ### Note per Windows
