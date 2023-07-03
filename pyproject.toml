@@ -6,6 +6,8 @@ authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "easyfatt_db_connector", from = "./src/"}]
+repository = "https://github.com/LukeSavefrogs/easyfatt-db-connector/"
+homepage = "https://github.com/LukeSavefrogs/easyfatt-db-connector/"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
