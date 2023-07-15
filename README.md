@@ -16,7 +16,7 @@ database = EasyfattFDB(archive_path=database_path, firebird_path="./firebird-dri
 Questa procedura può essere automatizzata impostando il parametro `download_firebird` a `True` (di default è `False`). E' possibile controllare il percorso di download del driver tramite il parametro `firebird_path` (di default `~/.cache/firebird-driver/`).
 
 ```python
-from easyfatt_db_connector.core.connection import EasyfattFDB
+from easyfatt_db_connector import EasyfattFDB
 
 database = EasyfattFDB(archive_path=database_path, download_firebird=True)
 ```
