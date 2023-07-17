@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Literal, Optional
 
+from easyfatt_db_connector.xml.vat_code import VatCode
+
 try:
     from typing import TypeAlias
 except ImportError:
@@ -574,6 +576,140 @@ class DocumentNotes(XMLMapper):
         ```
     """
 
+@dataclass(init=False, repr=False)
+class WithholdingTax(XMLMapper):
+    """ Campi ritenute d'acconto. """
+
+    __xml_mapping__ = {
+        "rate1": "WithholdingTaxPerc",
+        "rate2": "WithholdingTaxPerc2",
+        "amount": "WithholdingTaxAmount",
+        "amount_extras": "WithholdingTaxAmountB",
+        "name_extras": "WithholdingTaxNameB",
+    }
+
+    rate1: float
+    """ Percentuale ritenuta d'acconto applicata [Numerico].
+    
+    Example:
+        ```xml
+        <Document>
+            <WithholdingTaxPerc>...</WithholdingTaxPerc>
+        </Document>
+        ```
+    """
+
+    rate2: float
+    """ Seconda percentuale della ritenuta d'acconto (es.: 20% del 50%) [Numerico].
+    
+    Example:
+        ```xml
+        <Document>
+            <WithholdingTaxPerc2>...</WithholdingTaxPerc2>
+        </Document>
+        ```
+    """
+
+    amount: float
+    """ Totale ritenuta d'acconto calcolata nel documento [Valuta]. Ignorato in importazione.
+    
+    Example:
+        ```xml
+        <Document>
+            <WithholdingTaxAmount>...</WithholdingTaxAmount>
+        </Document>
+        ```
+    """
+
+    amount_extras: float
+    """ Totale altre ritenute (es.: Enasarco) [Valuta]. Ignorato in importazione.
+    
+    Example:
+        ```xml
+        <Document>
+            <WithholdingTaxAmountB>...</WithholdingTaxAmountB>
+        </Document>
+        ```
+    """
+
+    name_extras: str
+    """ Descrizione altre ritenute (es.: "Ritenuta ENASARCO").
+    
+    Example:
+        ```xml
+        <Document>
+            <WithholdingTaxNameB>...</WithholdingTaxNameB>
+        </Document>
+        ```
+    """
+
+
+@dataclass(init=False, repr=False)
+class Contributions(XMLMapper):
+    """ Campi contributi previdenziali. """
+
+    __xml_mapping__ = {
+        "description": "ContribDescription",
+        "percentage": "ContribPerc",
+        "is_subject_to_withholding_tax": "ContribSubjectToWithholdingTax",
+        "total": "ContribAmount",
+        "vat_code": "ContribVatCode",
+    }
+
+    description: str
+    """ Descrizione contributi previdenziali.
+    
+    Example:
+        ```xml
+        <Document>
+            <ContribDescription>...</ContribDescription>
+        </Document>
+        ```
+    """
+    
+    percentage: float
+    """ Percentuale contributi previdenziali.
+    
+    Example:
+        ```xml
+        <Document>
+            <ContribPerc>...</ContribPerc>
+        </Document>
+        ```
+    """
+    
+    is_subject_to_withholding_tax: bool
+    """ Contributi previdenziali soggetti a ritenuta d'acconto [true|false].
+    
+    Example:
+        ```xml
+        <Document>
+            <ContribSubjectToWithholdingTax>false</ContribSubjectToWithholdingTax>
+        </Document>
+        ```
+    """
+    
+    total: float
+    """ Ammontare contributi previdenziali. Ignorato in importazione.
+    
+    Example:
+        ```xml
+        <Document>
+            <ContribAmount>...</ContribAmount>
+        </Document>
+        ```
+    """
+    
+    vat_code: str
+    """ Aliquota Iva contributi previdenziali. Ignorato in importazione.
+    
+    Example:
+        ```xml
+        <Document>
+            <ContribVatCode>...</ContribVatCode>
+        </Document>
+        ```
+    """
 
 
 @dataclass(init=False, repr=False)
@@ -595,6 +731,37 @@ class Document(XMLMapper):
         "transport": FieldGroup(TransportInfo),
         "customer": FieldGroup(CustomerInfo),
         "notes": FieldGroup(DocumentNotes),
+
+        "cost_description": "CostDescription",
+        "cost_vat_code": Field(VatCode, tag="CostVatCode"),
+        "cost_amount": "CostAmount",
+
+        "total_without_tax": "TotalWithoutTax",
+        "total_vat": "VatAmount",
+        "total": "Total",
+        "total_paid": "PaymentAdvanceAmount",
+        
+        "prices_include_vat": "PricesIncludeVat",
+        "total_subject_to_withholding_tax": "TotalSubjectToWithholdingTax",
+
+        "withholding_tax": FieldGroup(WithholdingTax),
+        "contributions": FieldGroup(Contributions),
+
+        # ----------------------------------
+
+        "delayed_vat": "DelayedVat",
+        "delayed_vat_description": "DelayedVatDesc",
+        "delayed_vat_dueWithinOneYear": "DelayedVatDueWithinOneYear",
+
+
+        "warehouse": "Warehouse",
+        "price_list": "PriceList",
+        "payment_name": "PaymentName",
+        "payment_bank": "PaymentBank",
+        "sales_agent": "SalesAgent",
+        "expected_conclusion": "ExpectedConclusionDate",
+        "reference": "DocReference",
+        "pdf": "Pdf",
     }
 
     rows: list["Product"]
@@ -727,6 +894,241 @@ class Document(XMLMapper):
             <CustomField3>...</CustomField3>
             <CustomField4>...</CustomField4>
             <FootNotes>...</FootNotes>
+        </Document>
+        ```
+    """
+
+    cost_description: Optional[str] = None
+    """ Descrizione spese aggiuntive (ad esempio per spese di trasporto).
+
+    Example:
+        ```xml
+        <Document>
+            <CostDescription>...</CostDescription>
+        </Document>
+        ```
+    """
+
+    cost_vat_code: Optional[VatCode] = None
+    """ Codice IVA spese aggiuntive (deve essere già presente nella tabella "Categorie Iva" dell'applicazione).
+    
+    Il codice è accompagnato dalle seguenti proprietà, il cui uso è facoltativo:
+    - `Perc` (percentuale di tassazione applicata)
+    - `Class` (classe: imponibile, non imponibile, intra-ue, extra-ue, esente, escluso, fuori campo, iva non esposta, rev. charge)
+    - `Description`: descrizione libera del codice Iva
+
+    Example:
+        ```xml
+        <Document>
+            <CostVatCode>...</CostVatCode>
+        </Document>
+        ```
+    """
+
+    cost_amount: Optional[float] = None
+    """ Importo spese aggiuntive.
+
+    Example:
+        ```xml
+        <Document>
+            <CostAmount>...</CostAmount>
+        </Document>
+        ```
+    """
+
+    total_without_tax: Optional[float] = None
+    """ Totale documento al netto dell'imposta IVA [Valuta]. Ignorato in fase di importazione.
+
+    Example:
+        ```xml
+        <Document>
+            <TotalWithoutTax>...</TotalWithoutTax>
+        </Document>
+        ```
+    """
+
+    total_vat: Optional[float] = None
+    """ Totale Iva calcolata [Valuta]. Ignorato in importazione.
+
+    Example:
+        ```xml
+        <Document>
+            <VatAmount>...</VatAmount>
+        </Document>
+        ```
+    """
+
+    total: Optional[float] = None
+    """ Totale documento [Valuta]. Ignorato in importazione.
+
+    Example:
+        ```xml
+        <Document>
+            <Total>...</Total>
+            </Document>
+            ```
+    """
+
+    total_paid: Optional[float] = None
+    """ Importo acconto già versato (va usato solo nei documenti che non prevedono l'indicazione dei singoli Payment).
+
+    Example:
+        ```xml
+        <Document>
+            <TotalPaid>...</TotalPaid>
+        </Document>
+        ```
+    """
+
+    prices_include_vat: Optional[bool] = None
+    """ Se "true" i campi CostAmount e Row.Price vengono considerati importi ivati, altrimenti netti [true|false].
+
+    Example:
+        ```xml
+        <Document>
+            <PricesIncludeVat>true</PricesIncludeVat>
+        </Document>
+        ```
+    """
+
+    total_subject_to_withholding_tax: Optional[float] = None
+    """ Totale imponibile per ritenuta d'acconto [Numerico].
+
+    Example:
+        ```xml
+        <Document>
+            <TotalSubjectToWithholdingTax>...</TotalSubjectToWithholdingTax>
+        </Document>
+        ```
+    """
+
+    withholding_tax: Optional[WithholdingTax] = None
+    """ Informazioni sulla ritenuta d'acconto. """
+
+    contributions: Optional[Contributions] = None
+    """ Informazioni sui contributi previdenziali. """
+
+    # ----------------------------------
+
+    delayed_vat: Optional[bool] = None
+    """ Iva ad esigibilità differita [true|false].
+
+    Example:
+        ```xml
+        <Document>
+            <DelayedVat>...</DelayedVat>
+        </Document>
+        ```
+    """
+
+    delayed_vat_description: Optional[str] = None
+    """ Causale Iva ad esigibilità differita.
+
+    Example:
+        ```xml
+        <Document>
+            <DelayedVatDesc>...</DelayedVatDesc>
+        </Document>
+        ```
+    """
+
+    delayed_vat_dueWithinOneYear: Optional[bool] = None
+    """ Iva ad esigibilità differita comunque dovuta dopo un anno [true|false].
+
+    Example:
+        ```xml
+        <Document>
+            <DelayedVatDueWithinOneYear>...</DelayedVatDueWithinOneYear>
+        </Document>
+        ```
+    """
+
+
+    warehouse: Optional[str] = None
+    """ Denominazione del magazzino usato.
+
+    Example:
+        ```xml
+        <Document>
+            <Warehouse>...</Warehouse>
+        </Document>
+        ```
+    """
+
+    price_list: Optional[str] = None
+    """ Denominazione del listino prezzi usato.
+
+    Example:
+        ```xml
+        <Document>
+            <PriceList>...</PriceList>
+        </Document>
+        ```
+    """
+
+
+    payment_name: Optional[str] = None
+    """ Nome pagamento (deve essere già presente nella tabella "Tipi pagamento" di Easyfatt).
+
+    Example:
+        ```xml
+        <Document>
+            <PaymentName>...</PaymentName>
+        </Document>
+        ```
+    """
+
+    payment_bank: Optional[str] = None
+    """ Banca pagamento.
+
+    Example:
+        ```xml
+        <Document>
+            <PaymentBank>...</PaymentBank>
+        </Document>
+        ```
+    """
+
+    sales_agent: Optional[str] = None
+    """ Nome dell'agente venditore (deve corrispondere ad un nominativo già presente nella tabella degli agenti).
+
+    Example:
+        ```xml
+        <Document>
+            <SalesAgent>...</SalesAgent>
+        </Document>
+        ```
+    """
+
+    expected_conclusion: Optional[str] = None
+    """ Data prevista conclusione ordine [Data].
+
+    Example:
+        ```xml
+        <Document>
+            <ExpectedConclusionDate>...</ExpectedConclusionDate>
+        </Document>
+        ```
+    """
+
+    reference: Optional[str] = None
+    """ Causale del documento.
+    
+    Example:
+        ```xml
+        <Document>
+            <DocReference>...</DocReference>
+        </Document>
+        ```
+    """
+
+    pdf: Optional[str] = None
+    """ Documento in formato Pdf condificato Base64.
+
+    Example:
+        ```xml
+        <Document>
+            <Pdf>...</Pdf>
         </Document>
         ```
     """
