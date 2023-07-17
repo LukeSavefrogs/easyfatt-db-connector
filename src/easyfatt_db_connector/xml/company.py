@@ -14,7 +14,7 @@ class Company(XMLMapper):
         "city": "City",
         "province": "Province",
         "country": "Country",
-        "tax_code": "FiscalCode",
+        "fiscal_code": "FiscalCode",
         "vat_code": "VatCode",
         "phone": "Tel",
         "fax": "Fax",
@@ -82,7 +82,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    tax_code: str
+    fiscal_code: str
     """ Codice fiscale dell'azienda.
     
     Example:
