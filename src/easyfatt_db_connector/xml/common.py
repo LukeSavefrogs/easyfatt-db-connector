@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import itertools
 import os as _os
 
 import lxml.etree as ET
@@ -17,14 +18,22 @@ def python2xml(value):
 
 
 @dataclass
-class Field(object):
-    """Represents an XML field.
+class BaseField(object):
+    """Basic implementation of an XML field.
 
     Allows to define relationships between XML elements and Python classes.
     """
 
     target: type = None
     """ Class to map the XML element to. """
+
+
+@dataclass
+class Field(BaseField):
+    """Represents an XML field.
+
+    Allows to define relationships between XML elements and Python classes.
+    """
 
     tag: str = None
     """ Override XML tag name. """
@@ -34,7 +43,18 @@ class Field(object):
 
     child: "Field" = None
     """ Children XML elements. """
-    
+
+
+@dataclass
+class FieldGroup(BaseField):
+    """This special field allows to group multiple XML fields together under the same dataclass.
+
+    This is useful when many XML fields are related to each other and it is more convenient to
+    assign them to the attributes of a single dataclass.
+    """
+
+    ...
+
 
 class XMLMapper(object):
     """Base class for XML mappers.
@@ -71,7 +91,7 @@ class XMLMapper(object):
         return cls.from_xml(ET.fromstring(string))
 
     @classmethod
-    def from_xml(cls, element: ET._Element):
+    def from_xml(cls, element: ET._Element, warn_untracked=True):
         """Creates an instance of the class from an XML text."""
         if getattr(cls, "__xml_mapping__", None) is None:
             raise NotImplementedError(
@@ -79,27 +99,42 @@ class XMLMapper(object):
             )
 
         # Check if there are tags that are not tracked in the `__xml_mapping__` attribute
-        child_tags = [
-            (
-                child
-                if type(child) == str
-                else (child.tag if child.is_parent else child.target._get_xml_tag())
-            )
-            for child in cls.__xml_mapping__.values()
-        ]
+        # I did not use a list comprehension since it would have been too long and unreadable
+        child_tags = []
+        for child in cls.__xml_mapping__.values():
+            if type(child) == str:
+                child_tags.append(child)
+            elif isinstance(child, FieldGroup):
+                child_tags.extend(list(child.target.__xml_mapping__.values()))
+            elif isinstance(child, Field):
+                if getattr(child, "is_parent"):
+                    child_tags.append(child.tag)
+                else:
+                    child_tags.append(child.target._get_xml_tag())
+        
         untracked_children = [
             child.tag for child in element.iterchildren() if child.tag not in child_tags
         ]
-        if untracked_children:
-            print(f"\nWARNING: A total of {len(untracked_children)} children are not tracked ({', '.join(untracked_children)}) in the `{cls.__name__}.__xml_mapping__` class attribute.\n")
+        
+        if untracked_children and warn_untracked:
+            print(
+                f"\nWARNING: A total of {len(untracked_children)} children are not tracked ({', '.join(untracked_children)}) in the `{cls.__name__}.__xml_mapping__` class attribute.\n"
+            )
 
         xml_object = cls()
         for attr, target in cls.__xml_mapping__.items():
             # Fail if the attribute is of the wrong type
-            if type(target) not in [str, Field]:
+            if type(target) != str and not isinstance(target, BaseField):
                 raise TypeError(f"target must be a string or Field, not {type(target)}")
 
-            if isinstance(target, Field):
+            if isinstance(target, FieldGroup):
+                setattr(
+                    xml_object,
+                    attr,
+                    target.target.from_xml(element, warn_untracked=False),
+                )
+
+            elif isinstance(target, Field):
                 child_class_name = ""
                 if getattr(target, "tag", None):
                     child_class_name = target.tag
