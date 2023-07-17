@@ -29,12 +29,12 @@ class Field(object):
     tag: str = None
     """ Override XML tag name. """
 
-    child: "Field" = None
-    """ Children XML elements. """
-    
     is_parent: bool = False
     """ Whether the XML element is a list of elements. """
 
+    child: "Field" = None
+    """ Children XML elements. """
+    
 
 class XMLMapper(object):
     """Base class for XML mappers.
