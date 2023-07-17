@@ -60,6 +60,8 @@ class XMLMapper(object):
             elif isinstance(child, Field):
                 if getattr(child, "is_parent"):
                     child_tags.append(child.tag)
+                elif getattr(child, "tag", None):
+                    child_tags.append(child.tag)
                 else:
                     child_tags.append(child.target._get_xml_tag())
         
