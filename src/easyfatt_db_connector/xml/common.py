@@ -6,8 +6,6 @@ import xml.dom.minidom as minidom
 
 from typing import get_type_hints
 
-from typing_extensions import Self
-
 
 def python2xml(value):
     if isinstance(value, bool):
@@ -31,9 +29,9 @@ class Field(object):
     tag: str = None
     """ Override XML tag name. """
 
-    child: Self = None
+    child: "Field" = None
     """ Children XML elements. """
-
+    
     is_parent: bool = False
     """ Whether the XML element is a list of elements. """
 
@@ -68,12 +66,12 @@ class XMLMapper(object):
         return cls.__xml_name__ if getattr(cls, "__xml_name__", None) else cls.__name__
 
     @classmethod
-    def from_xml_string(cls, string: str) -> Self:
+    def from_xml_string(cls, string: str):
         """Creates an instance of the class from an XML text."""
         return cls.from_xml(ET.fromstring(string))
 
     @classmethod
-    def from_xml(cls, element: ET._Element) -> Self:
+    def from_xml(cls, element: ET._Element):
         """Creates an instance of the class from an XML text."""
         if getattr(cls, "__xml_mapping__", None) is None:
             raise NotImplementedError(
