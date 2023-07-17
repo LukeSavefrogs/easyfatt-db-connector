@@ -111,7 +111,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryName>...</DeliveryName>
+        <Document>
+		    <DeliveryName>...</DeliveryName>
+        </Document>
 		```
 	"""
 
@@ -120,7 +122,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryAddress>...</DeliveryAddress>
+        <Document>
+		    <DeliveryAddress>...</DeliveryAddress>
+        </Document>
 		```
 	"""
 
@@ -129,7 +133,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryPostcode>...</DeliveryPostcode>
+        <Document>
+		    <DeliveryPostcode>...</DeliveryPostcode>
+        </Document>
 		```
 	"""
 
@@ -138,7 +144,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryCity>...</DeliveryCity>
+        <Document>
+		    <DeliveryCity>...</DeliveryCity>
+        </Document>
 		```
 	"""
 
@@ -147,7 +155,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryProvince>...</DeliveryProvince>
+        <Document>
+		    <DeliveryProvince>...</DeliveryProvince>
+        </Document>
 		```
 	"""
 
@@ -156,7 +166,9 @@ class DeliveryInfo(XMLMapper):
 	
 	Example:
 		```xml
-		<DeliveryCountry>...</DeliveryCountry>
+        <Document>
+		    <DeliveryCountry>...</DeliveryCountry>
+        </Document>
 		```
 	"""
 
@@ -176,28 +188,92 @@ class TransportInfo(XMLMapper):
     }
 
     carrier: str
-    """ Denominazione vettore. """
+    """ Denominazione vettore.
+
+    Example:
+        ```xml
+        <Document>
+            <Carrier>...</Carrier>
+        </Document>
+        ```
+    """
 
     reason: str
-    """ Causale trasporto. """
+    """ Causale trasporto.
+
+    Example:
+        ```xml
+        <Document>
+            <TransportReason>...</TransportReason>
+        </Document>
+        ```
+    """
 
     goods_appearance: str
-    """ Aspetto delle merci. """
+    """ Aspetto delle merci.
+
+    Example:
+        ```xml
+        <Document>
+            <GoodsAppearance>...</GoodsAppearance>
+        </Document>
+        ```
+    """
 
     pieces: int
-    """ Numero colli. """
+    """ Numero colli.
+
+    Example:
+        ```xml
+        <Document>
+            <NumOfPieces>...</NumOfPieces>
+        </Document>
+        ```
+    """
 
     date_time: str
-    """ Data e ora del trasporto. """
+    """ Data e ora del trasporto.
+
+    Example:
+        ```xml
+        <Document>
+            <TransportDateTime>...</TransportDateTime>
+        </Document>
+        ```
+    """
 
     shipment_terms: str
-    """ Porto (franco, assegnato...). """
+    """ Porto (franco, assegnato...).
+
+    Example:
+        ```xml
+        <Document>
+            <ShipmentTerms>...</ShipmentTerms>
+        </Document>
+        ```
+    """
 
     weight: str
-    """ Peso trasportato. """
+    """ Peso trasportato.
+
+    Example:
+        ```xml
+        <Document>
+            <TransportedWeight>...</TransportedWeight>
+        </Document>
+        ```
+    """
 
     tracking_number: str
-    """ Numero di tracciatura spedizione. """
+    """ Numero di tracciatura spedizione.
+
+    Example:
+        ```xml
+        <Document>
+            <TrackingNumber>...</TrackingNumber>
+        </Document>
+        ```
+    """
 
 @dataclass(init=False, repr=False)
 class CustomerInfo(XMLMapper):
