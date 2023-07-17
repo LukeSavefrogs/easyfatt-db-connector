@@ -1,59 +1,10 @@
-from dataclasses import dataclass
-import itertools
-import os as _os
-
-import lxml.etree as ET
-import xml.dom.minidom as minidom
-
+# import os as _os
+# import xml.dom.minidom as minidom
 from typing import get_type_hints
 
+import lxml.etree as ET
 
-def python2xml(value):
-    if isinstance(value, bool):
-        return str(value).lower()
-    elif value is None:
-        return ""
-    else:
-        return str(value)
-
-
-@dataclass
-class BaseField(object):
-    """Basic implementation of an XML field.
-
-    Allows to define relationships between XML elements and Python classes.
-    """
-
-    target: type = None
-    """ Class to map the XML element to. """
-
-
-@dataclass
-class Field(BaseField):
-    """Represents an XML field.
-
-    Allows to define relationships between XML elements and Python classes.
-    """
-
-    tag: str = None
-    """ Override XML tag name. """
-
-    is_parent: bool = False
-    """ Whether the XML element is a list of elements. """
-
-    child: "Field" = None
-    """ Children XML elements. """
-
-
-@dataclass
-class FieldGroup(BaseField):
-    """This special field allows to group multiple XML fields together under the same dataclass.
-
-    This is useful when many XML fields are related to each other and it is more convenient to
-    assign them to the attributes of a single dataclass.
-    """
-
-    ...
+from .fields import BaseField, Field, FieldGroup
 
 
 class XMLMapper(object):
