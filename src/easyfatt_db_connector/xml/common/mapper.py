@@ -64,11 +64,11 @@ class XMLMapper(object):
                     child_tags.append(child.tag)
                 else:
                     child_tags.append(child.target._get_xml_tag())
-        
+
         untracked_children = [
             child.tag for child in element.iterchildren() if child.tag not in child_tags
         ]
-        
+
         if untracked_children and warn_untracked:
             print(
                 f"\nWARNING: A total of {len(untracked_children)} children are not tracked ({', '.join(untracked_children)}) in the `{cls.__name__}.__xml_mapping__` class attribute.\n"
@@ -106,11 +106,14 @@ class XMLMapper(object):
 
                     setattr(xml_object, attr, children_obj)
                 else:
-                    setattr(
-                        xml_object,
-                        attr,
-                        target.target.from_xml(element.find(child_class_name)),
-                    )
+                    child_element = element.find(child_class_name)
+
+                    if child_element is not None:
+                        setattr(
+                            xml_object,
+                            attr,
+                            target.target.from_xml(child_element),
+                        )
             else:
                 element_text = ""
 
@@ -132,7 +135,7 @@ class XMLMapper(object):
 
                 # =======> Type conversion <=======
                 expected_type = get_type_hints(cls)[attr]
-    
+
                 if expected_type == bool or "[bool]" in str(expected_type):
                     if element_text is None:
                         element_text = ""
