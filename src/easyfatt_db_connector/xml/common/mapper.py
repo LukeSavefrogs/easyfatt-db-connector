@@ -115,8 +115,11 @@ class XMLMapper(object):
                 element_text = ""
 
                 # ---> XML Attribute
-                if target.startswith("@"):
+                if target.strip().startswith("@"):
                     element_text = element.get(target[1:])
+
+                elif target.strip().upper() == "#TEXT":
+                    element_text = element.text
 
                 # ---> XML Child Element
                 else:
