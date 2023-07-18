@@ -39,18 +39,21 @@ class XMLMapper(object):
         return cls.__xml_name__ if getattr(cls, "__xml_name__", None) else cls.__name__
 
     @classmethod
-    def from_xml_string(cls, string: str):
-        """Creates an instance of the class from an XML text."""
-        return cls.from_xml(ET.fromstring(string))
+    def from_xml_string(cls, string: str, convert_types=True):
+        """ Creates an instance of the class from an XML text. """
+        return cls.from_xml(
+            ET.fromstring(string),
+            convert_types=convert_types,
+        )
 
     @classmethod
-    def from_xml(cls, element: ET._Element, warn_untracked=True):
-        """Creates an instance of the class from an XML text."""
+    def from_xml(cls, element: ET._Element, warn_untracked=True, convert_types=True):
+        """ Creates an instance of the class from an XML text. """
         if getattr(cls, "__xml_mapping__", None) is None:
             raise NotImplementedError(
                 "This class does not have an __xml_mapping__ attribute defined."
             )
-
+        
         # Check if there are tags that are not tracked in the `__xml_mapping__` attribute
         # I did not use a list comprehension since it would have been too long and unreadable
         child_tags = []
@@ -86,7 +89,7 @@ class XMLMapper(object):
                 setattr(
                     xml_object,
                     attr,
-                    target.target.from_xml(element, warn_untracked=False),
+                    target.target.from_xml(element, warn_untracked=False, convert_types=convert_types),
                 )
 
             elif isinstance(target, Field):
@@ -102,7 +105,7 @@ class XMLMapper(object):
                     )
 
                     children_obj = [
-                        target.child.target.from_xml(child_xml)
+                        target.child.target.from_xml(child_xml, warn_untracked=warn_untracked, convert_types=convert_types)
                         for child_xml in children
                     ]
 
@@ -114,7 +117,7 @@ class XMLMapper(object):
                         setattr(
                             xml_object,
                             attr,
-                            target.target.from_xml(child_element),
+                            target.target.from_xml(child_element, warn_untracked=warn_untracked, convert_types=convert_types),
                         )
             else:
                 element_text = ""
@@ -135,15 +138,19 @@ class XMLMapper(object):
 
                     element_text = child_element.text
 
+                if not convert_types:
+                    setattr(xml_object, attr, element_text)
+                    continue
+
                 # =======> Type conversion <=======
                 expected_type = get_type_hints(cls)[attr]
-                
+
                 try:
                     converted_value = None
                     if expected_type == bool or "[bool]" in str(expected_type):
                         if element_text is None:
                             element_text = ""
-                        converted_value = (element_text.lower() == "true")
+                        converted_value = element_text.lower() == "true"
 
                     elif expected_type == int or "[int]" in str(expected_type):
                         if element_text is None:

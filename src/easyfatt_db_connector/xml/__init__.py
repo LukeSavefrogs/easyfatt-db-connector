@@ -5,12 +5,13 @@ from easyfatt_db_connector.xml.root import EasyfattXML
 
 __all__ = ["read_xml", "EasyfattXML"]
 
-def read_xml(filename: Optional[Union[str, Path]] = None, text: Optional[str] = None) -> EasyfattXML:
+def read_xml(filename: Optional[Union[str, Path]] = None, text: Optional[str] = None, convert_types=True) -> EasyfattXML:
     """ Legge un file XML e lo converte in un oggetto `EasyfattXML`. 
     
     Args:
         filename (Union[str, Path], optional): Percorso del file XML da leggere. Defaults to None.
         text (str, optional): Testo del file XML da leggere. Defaults to None.
+        convert_types (bool, optional): Se `True`, converte i valori dei tag in tipi Python. Defaults to True.
     
     Raises:
         ValueError: Se non viene fornito né un filename né un testo, oppure se vengono forniti entrambi.
@@ -29,4 +30,4 @@ def read_xml(filename: Optional[Union[str, Path]] = None, text: Optional[str] = 
     elif text is not None:
         xml_string = text.strip()
     
-    return EasyfattXML.from_xml_string(bytes(xml_string, encoding='utf-8'))
+    return EasyfattXML.from_xml_string(bytes(xml_string, encoding='utf-8'), convert_types=convert_types)
