@@ -46,7 +46,7 @@ class Payment(XMLMapper):
     }
 
     advance: bool
-    """ Se "true", segnala che il pagamento è riferito ad un acconto. 
+    """ Se `true`, segnala che il pagamento è riferito ad un acconto.
     
     Example:
         ```xml
@@ -222,7 +222,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    pieces: int
+    pieces: str = "0"
     """ Numero colli.
 
     Example:
@@ -255,7 +255,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    weight: str
+    weight: str = "0"
     """ Peso trasportato.
 
     Example:
@@ -610,7 +610,7 @@ class WithholdingTax(XMLMapper):
         ```
     """
 
-    amount: float
+    amount: float = 0
     """ Totale ritenuta d'acconto calcolata nel documento [Valuta]. Ignorato in importazione.
     
     Example:
@@ -621,7 +621,7 @@ class WithholdingTax(XMLMapper):
         ```
     """
 
-    amount_extras: float
+    amount_extras: float = 0
     """ Totale altre ritenute (es.: Enasarco) [Valuta]. Ignorato in importazione.
     
     Example:
@@ -667,7 +667,7 @@ class Contributions(XMLMapper):
         ```
     """
     
-    percentage: float
+    percentage: float = 0
     """ Percentuale contributi previdenziali.
     
     Example:
@@ -678,7 +678,7 @@ class Contributions(XMLMapper):
         ```
     """
     
-    is_subject_to_withholding_tax: bool
+    is_subject_to_withholding_tax: bool = False
     """ Contributi previdenziali soggetti a ritenuta d'acconto [true|false].
     
     Example:
@@ -689,7 +689,7 @@ class Contributions(XMLMapper):
         ```
     """
     
-    total: float
+    total: float = 0
     """ Ammontare contributi previdenziali. Ignorato in importazione.
     
     Example:
@@ -700,7 +700,7 @@ class Contributions(XMLMapper):
         ```
     """
     
-    vat_code: str
+    vat_code: int = 0
     """ Aliquota Iva contributi previdenziali. Ignorato in importazione.
     
     Example:
@@ -852,7 +852,7 @@ class Document(XMLMapper):
         ```
     """
 
-    type: Optional[DocumentType] = None
+    type: Optional[DocumentType] = "C"
     """ Codice corrispondente al tipo di documento. Se `None`, il documento sarà considerato un ordine cliente. 
     
     Example:
@@ -958,7 +958,7 @@ class Document(XMLMapper):
         ```
     """
 
-    cost_amount: Optional[float] = None
+    cost_amount: Optional[float] = 0
     """ Importo spese aggiuntive.
 
     Example:
@@ -969,7 +969,7 @@ class Document(XMLMapper):
         ```
     """
 
-    total_without_tax: Optional[float] = None
+    total_without_tax: Optional[float] = 0
     """ Totale documento al netto dell'imposta IVA [Valuta]. Ignorato in fase di importazione.
 
     Example:
@@ -980,7 +980,7 @@ class Document(XMLMapper):
         ```
     """
 
-    total_vat: Optional[float] = None
+    total_vat: Optional[float] = 0
     """ Totale Iva calcolata [Valuta]. Ignorato in importazione.
 
     Example:
@@ -998,8 +998,8 @@ class Document(XMLMapper):
         ```xml
         <Document>
             <Total>...</Total>
-            </Document>
-            ```
+        </Document>
+        ```
     """
 
     total_paid: Optional[float] = None
@@ -1078,7 +1078,7 @@ class Document(XMLMapper):
 
 
     warehouse: Optional[str] = None
-    """ Denominazione del magazzino usato.
+    """ Denominazione del magazzino movimentato.
 
     Example:
         ```xml
@@ -1133,8 +1133,8 @@ class Document(XMLMapper):
         ```
     """
 
-    expected_conclusion: Optional[str] = None
-    """ Data prevista conclusione ordine [Data].
+    expected_conclusion: Optional[str] = "2999-12-31"
+    """ Data di conclusione prevista (usato esclusivamente negli ordini clienti e fornitori) [Data].
 
     Example:
         ```xml
