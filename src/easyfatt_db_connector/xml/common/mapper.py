@@ -112,9 +112,11 @@ class XMLMapper(object):
                         target.target.from_xml(element.find(child_class_name)),
                     )
             else:
+                element_text = ""
+
                 # ---> XML Attribute
                 if target.startswith("@"):
-                    setattr(xml_object, attr, element.get(target[1:]))
+                    element_text = element.get(target[1:])
 
                 # ---> XML Child Element
                 else:
@@ -123,28 +125,29 @@ class XMLMapper(object):
                     if child_element is None:
                         continue
 
-                    # =======> Type conversion <=======
-                    expected_type = get_type_hints(cls)[attr]
-
                     element_text = child_element.text
-                    if expected_type == bool or "[bool]" in str(expected_type):
-                        if element_text is None:
-                            element_text = ""
-                        setattr(xml_object, attr, element_text.lower() == "true")
-                    elif expected_type == int or "[int]" in str(expected_type):
-                        if element_text is None:
-                            element_text = 0
-                        setattr(xml_object, attr, int(element_text))
-                    elif expected_type == float or "[float]" in str(expected_type):
-                        if element_text is None:
-                            element_text = 0
-                        setattr(xml_object, attr, float(element_text))
-                    elif expected_type == str or "[str]" in str(expected_type):
-                        if element_text is None:
-                            element_text = ""
-                        setattr(xml_object, attr, element_text)
-                    else:
-                        setattr(xml_object, attr, element_text)
+
+                # =======> Type conversion <=======
+                expected_type = get_type_hints(cls)[attr]
+    
+                if expected_type == bool or "[bool]" in str(expected_type):
+                    if element_text is None:
+                        element_text = ""
+                    setattr(xml_object, attr, element_text.lower() == "true")
+                elif expected_type == int or "[int]" in str(expected_type):
+                    if element_text is None:
+                        element_text = 0
+                    setattr(xml_object, attr, int(element_text))
+                elif expected_type == float or "[float]" in str(expected_type):
+                    if element_text is None:
+                        element_text = 0
+                    setattr(xml_object, attr, float(element_text))
+                elif expected_type == str or "[str]" in str(expected_type):
+                    if element_text is None:
+                        element_text = ""
+                    setattr(xml_object, attr, element_text)
+                else:
+                    setattr(xml_object, attr, element_text)
 
         return xml_object
 
