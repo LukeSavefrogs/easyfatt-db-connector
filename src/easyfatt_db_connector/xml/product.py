@@ -24,7 +24,7 @@ class Product(XMLMapper):
         "price": "Price",
         "discounts": "Discounts",
         "eco_fee": "EcoFee",
-        "vat_info": Field(VatCode),
+        "vat_info": Field(VatCode, tag="VatCode"),
         "total": "Total",
         "withholding_tax": "WithholdingTax",
         "stock": "Stock",
