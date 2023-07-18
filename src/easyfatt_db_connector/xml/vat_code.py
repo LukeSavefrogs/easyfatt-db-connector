@@ -4,14 +4,21 @@ import lxml.etree as ET
 from easyfatt_db_connector.xml.common import XMLMapper
 
 
-@dataclass(init=False)
+@dataclass(init=False, repr=False)
 class VatCode(XMLMapper):
     """ Informazioni sull'IVA applicata al prodotto. """
-    __xml_mapping__ = {}
+    __xml_mapping__ = {
+        "code": "#TEXT",
+        "description": "@Description",
+        "percentage": "@Perc",
+        "vat_class": "@Class",
+    }
     
     code: str
     """ Codice IVA (deve essere già presente nella tabella "Categorie Iva" dell'applicazione). 
     
+    Attenzione, non si tratta del valore percenutale di tassazione.
+
     Example:
         ```xml
         <Row>
@@ -52,15 +59,3 @@ class VatCode(XMLMapper):
         </Row>
         ```
     """
-
-    @classmethod
-    def from_xml(cls, xml: ET._Element) -> "VatCode":
-        """ Costruisce un'istanza di VatCode da un elemento XML. """
-        self = cls()
-        
-        self.code = xml.text
-        self.description = xml.get("Description", None)
-        self.percentage = xml.get("Perc", None)
-        self.vat_class = xml.get("Class", None)
-
-        return self
