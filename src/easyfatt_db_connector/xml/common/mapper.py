@@ -48,8 +48,22 @@ class XMLMapper(object):
 
     @classmethod
     def from_xml(cls, element: ET._Element, warn_untracked=True, convert_types=True):
-        """ Creates an instance of the class from an XML text. """
-        if getattr(cls, "__xml_mapping__", None) is None:
+        """ Creates an instance of the class from an XML text. 
+        
+        Args:
+            element (ET._Element): The XML element to parse.
+            warn_untracked (bool, optional): Whether to warn if there are untracked children. Defaults to True.
+            convert_types (bool, optional): Whether to convert the types of the fields. Defaults to True.
+            
+            Raises:
+                NotImplementedError: If the class does not have an `__xml_mapping__` attribute or if is not a dictionary.
+                TypeError: If the value of the `__xml_mapping__` attribute is not valid.
+                TypeConversionError: If the type of the field is not supported.
+                
+            Returns:
+                XMLMapper: An instance of the class.
+        """
+        if getattr(cls, "__xml_mapping__", None) is None and type(cls.__xml_mapping__) != dict:
             raise NotImplementedError(
                 "This class does not have an __xml_mapping__ attribute defined."
             )
