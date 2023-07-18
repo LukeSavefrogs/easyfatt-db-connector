@@ -4,6 +4,8 @@ from typing import get_type_hints
 
 import lxml.etree as ET
 
+from easyfatt_db_connector.core.exceptions import TypeConversionError
+
 from .fields import BaseField, Field, FieldGroup
 
 
@@ -135,25 +137,38 @@ class XMLMapper(object):
 
                 # =======> Type conversion <=======
                 expected_type = get_type_hints(cls)[attr]
+                
+                try:
+                    converted_value = None
+                    if expected_type == bool or "[bool]" in str(expected_type):
+                        if element_text is None:
+                            element_text = ""
+                        converted_value = (element_text.lower() == "true")
 
-                if expected_type == bool or "[bool]" in str(expected_type):
-                    if element_text is None:
-                        element_text = ""
-                    setattr(xml_object, attr, element_text.lower() == "true")
-                elif expected_type == int or "[int]" in str(expected_type):
-                    if element_text is None:
-                        element_text = 0
-                    setattr(xml_object, attr, int(element_text))
-                elif expected_type == float or "[float]" in str(expected_type):
-                    if element_text is None:
-                        element_text = 0
-                    setattr(xml_object, attr, float(element_text))
-                elif expected_type == str or "[str]" in str(expected_type):
-                    if element_text is None:
-                        element_text = ""
-                    setattr(xml_object, attr, element_text)
+                    elif expected_type == int or "[int]" in str(expected_type):
+                        if element_text is None:
+                            element_text = 0
+                        converted_value = int(element_text)
+
+                    elif expected_type == float or "[float]" in str(expected_type):
+                        if element_text is None:
+                            element_text = 0
+                        converted_value = float(element_text)
+
+                    elif expected_type == str or "[str]" in str(expected_type):
+                        if element_text is None:
+                            element_text = ""
+                        converted_value = str(element_text)
+
+                    else:
+                        converted_value = element_text
+
+                except ValueError:
+                    raise TypeConversionError(
+                        f"Error while converting `{cls.__name__}.{attr}`: `{element_text}` cannot be converted to `{expected_type.__name__}`."
+                    )
                 else:
-                    setattr(xml_object, attr, element_text)
+                    setattr(xml_object, attr, converted_value)
 
         return xml_object
 
