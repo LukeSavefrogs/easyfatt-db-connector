@@ -713,6 +713,39 @@ class Contributions(XMLMapper):
 
 
 @dataclass(init=False, repr=False)
+class DocumentPDFFile(XMLMapper):
+    """ Campo `<Pdf>`. """
+
+    __xml_name__ = "Pdf"
+    __xml_mapping__ = {
+        "filename": "@FileName",
+        "content": "#TEXT",
+    }
+
+    filename: str
+    """ Nome file PDF. 
+    
+    Example:
+        ```xml
+        <Document>
+            <Pdf FileName="..."></Pdf>
+        </Document>
+        ```
+    """
+
+    content: str
+    """ Contenuto file codificato in base64.
+    
+    Example:
+        ```xml
+        <Document>
+            <Pdf>...</Pdf>
+        </Document>
+        ```
+    """
+    
+
+@dataclass(init=False, repr=False)
 class Document(XMLMapper):
     """ Dati del documento corrente (elementi `<Document>`).
 
@@ -761,7 +794,7 @@ class Document(XMLMapper):
         "sales_agent": "SalesAgent",
         "expected_conclusion": "ExpectedConclusionDate",
         "reference": "DocReference",
-        "pdf": "Pdf",
+        "pdf": Field(DocumentPDFFile, tag="Pdf"),
     }
 
     rows: list["Product"]
@@ -1122,7 +1155,7 @@ class Document(XMLMapper):
         ```
     """
 
-    pdf: Optional[str] = None
+    pdf: Optional[DocumentPDFFile] = None
     """ Documento in formato Pdf condificato Base64.
 
     Example:
