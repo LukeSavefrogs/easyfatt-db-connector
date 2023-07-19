@@ -1,7 +1,65 @@
-# easyfatt-db-connector
+# Easyfatt - Python
+
+Questo pacchetto fornisce diversi strumenti per semplificare lo sviluppo di automazioni in **Python** per l'applicativo gestionale "[**Danea Easyfatt**](https://www.danea.it/software/easyfatt/)".
+
+## Funzioni
+
+- Lettura file `.DefXml` esportati da Easyfatt (_ordini cliente, vendite banco, preventivi, ecc.._)
+- **Download driver** firebird (necessario per la connessione al DB di Easyfatt)
+- Connessione al **database** di Easyfatt
 
 ## Utilizzo
 
+### File `.DefXml`
+
+Il modulo `easyfatt_db_connector.xml` espone la classe `EasyfattXML` e la funzione `read_xml` (una funzione "utility" che restituisce un'istanza di `EasyfattXML`).
+
+Sia i metodi `EasyfattXML.from_xml*()` che la funzione `read_xml()` accettano il parametro `convert_types` (di default impostato a `True`) che permette di convertire i valori dei tag in tipi Python nativi (es. `int`, `float`, `bool`, ecc..). Se disabilitato i valori dei tag saranno sempre stringhe o `None`.
+
+#### Esempio
+
+In questo esempio lo script leggerà l'esportazione di una serie di ordini cliente e stamperà a schermo l'indirizzo di spedizione di ogni documento:
+
+```python
+from pathlib import Path
+from easyfatt_db_connector.xml import read_xml
+
+xml_file = Path("OrdiniCliente.DefXml").expanduser()
+
+# Questa istruzione...
+xml_object = read_xml(xml_file, convert_types=True)
+
+# ... si può scrivere anche così
+xml_object = EasyfattXML.from_xml_string(xml_file.read_bytes(), convert_types=True)
+
+for doc in xml_object.documents:
+    print(f"Document n°{doc.number}{doc.numbering} will be shipped at '{doc.delivery.address}'")
+```
+
+L'output sarà il seguente:
+
+```plaintext
+Document n°1 will be shipped at ''
+Document n°2 will be shipped at ''
+Document n°3 will be shipped at ''
+Document n°1/A will be shipped at ''
+Document n°2/A will be shipped at ''
+Document n°4 will be shipped at ''
+Document n°5 will be shipped at ''
+Document n°6 will be shipped at 'Via Facciolati, 546'
+Document n°3/A will be shipped at 'Via Catania, sn'
+Document n°7 will be shipped at ''
+Document n°8 will be shipped at 'Via Rodolfo Manganaro'
+Document n°9 will be shipped at 'Via Enrico Berlinguer,75'
+Document n°10 will be shipped at ''
+Document n°11 will be shipped at 'Via C. Colombo, 632'
+Document n°12 will be shipped at ''
+Document n°13 will be shipped at ''
+Document n°1/B will be shipped at ''
+Document n°14 will be shipped at 'Via G. Di Vittorio, 56'
+Document n°15 will be shipped at 'Via Cavour, 152'
+Document n°16 will be shipped at 'Via N.S. degli Angeli, 28'
+```
 
 ### Database: download driver Firebird (_prerequisito_)
 
