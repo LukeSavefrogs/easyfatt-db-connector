@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "easyfatt-db-connector"
-version = "0.2.1"
+version = "0.3.0"
 description = ""
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 license = "MIT"
