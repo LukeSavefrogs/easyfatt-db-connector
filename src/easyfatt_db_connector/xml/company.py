@@ -22,7 +22,7 @@ class Company(XMLMapper):
         "homepage": "HomePage",
     }
 
-    name: str
+    name: str = ""
     """ Nome del mittente (l'azienda che ha originato il file). 
     
     Example:
@@ -32,7 +32,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    address: str
+    address: str = ""
     """ Indirizzo dell'azienda.
     
     Example:
@@ -42,7 +42,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    postcode: str
+    postcode: str = ""
     """ CAP dell'azienda.
     
     Example:
@@ -52,7 +52,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    city: str
+    city: str = ""
     """ Città dell'azienda.
     
     Example:
@@ -62,7 +62,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    province: str
+    province: str = ""
     """ Provincia dell'azienda (2 caratteri).
     
     Example:
@@ -72,7 +72,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    country: str
+    country: str = ""
     """ Nazione dell'azienda.
     
     Example:
@@ -82,7 +82,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    fiscal_code: str
+    fiscal_code: str = ""
     """ Codice fiscale dell'azienda.
     
     Example:
@@ -92,7 +92,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    vat_code: str
+    vat_code: str = ""
     """ Partita IVA dell'azienda.
     
     Example:
@@ -102,7 +102,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    phone: str
+    phone: str = ""
     """ Numero di telefono dell'azienda.
     
     Example:
@@ -112,7 +112,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    fax: str
+    fax: str = ""
     """ Numero di fax dell'azienda.
     
     Example:
@@ -122,7 +122,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    email: str
+    email: str = ""
     """ Indirizzo email dell'azienda.
     
     Example:
@@ -132,7 +132,7 @@ class Company(XMLMapper):
         </Company>
     """
 
-    homepage: str
+    homepage: str = ""
     """ Sito web dell'azienda.
     
     Example:

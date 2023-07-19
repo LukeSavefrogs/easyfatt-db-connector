@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, Optional
 
 from easyfatt_db_connector.xml.vat_code import VatCode
@@ -108,7 +108,7 @@ class DeliveryInfo(XMLMapper):
 		"country": "DeliveryCountry",
 	}
 
-	name: str
+	name: str = ""
 	""" Nome e cognome o denominazione.
 	
 	Example:
@@ -119,7 +119,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-	address: str
+	address: str = ""
 	""" Indirizzo.
 	
 	Example:
@@ -130,7 +130,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-	postcode: str
+	postcode: str = ""
 	""" CAP.
 	
 	Example:
@@ -141,7 +141,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-	city: str
+	city: str = ""
 	""" Città.
 	
 	Example:
@@ -152,7 +152,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-	province: str
+	province: str = ""
 	""" Provincia (2 caratteri).
 	
 	Example:
@@ -163,7 +163,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-	country: str
+	country: str = ""
 	""" Nazione.
 	
 	Example:
@@ -189,7 +189,7 @@ class TransportInfo(XMLMapper):
         "tracking_number": "TrackingNumber",
     }
 
-    carrier: str
+    carrier: str = ""
     """ Denominazione vettore.
 
     Example:
@@ -200,7 +200,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    reason: str
+    reason: str = ""
     """ Causale trasporto.
 
     Example:
@@ -211,7 +211,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    goods_appearance: str
+    goods_appearance: str = ""
     """ Aspetto delle merci.
 
     Example:
@@ -233,7 +233,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    date_time: str
+    date_time: str = ""
     """ Data e ora del trasporto.
 
     Example:
@@ -244,7 +244,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    shipment_terms: str
+    shipment_terms: str = ""
     """ Porto (franco, assegnato...).
 
     Example:
@@ -266,7 +266,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-    tracking_number: str
+    tracking_number: str = ""
     """ Numero di tracciatura spedizione.
 
     Example:
@@ -304,7 +304,7 @@ class CustomerInfo(XMLMapper):
         "reference": "CustomerReference",
     }
 
-    code: str
+    code: str = ""
     """ Codice anagrafica; serve per associare l'ordine all'eventuale cliente già inserito in anagrafica. 
     
     Durante l'importazione, in presenza di `<CustomerCode>` e in assenza altri codici `<Customer...>`, 
@@ -319,7 +319,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    web_login: str
+    web_login: str = ""
     """ Login web del cliente (usato nell'integrazione e-commerce).
      
     Nella fase di identificazione dell'anagrafica, questo campo viene preso in considerazione solo in mancanza di `CustomerCode`.
@@ -332,7 +332,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    name: str
+    name: str = ""
     """ Cognome e nome o denominazione sociale.
 
     Example:
@@ -343,7 +343,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    address: str
+    address: str = ""
     """ Indirizzo.
 
     Example:
@@ -354,7 +354,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    postcode: str
+    postcode: str = ""
     """ CAP.
 
     Example:
@@ -365,7 +365,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    city: str
+    city: str = ""
     """ Città.
 
     Example:
@@ -376,7 +376,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    province: str
+    province: str = ""
     """ Provincia (2 caratteri).
 
     Example:
@@ -387,7 +387,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    country: str
+    country: str = ""
     """ Nazione.
 
     Example:
@@ -398,7 +398,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    fiscal_code: str
+    fiscal_code: str = ""
     """ Codice fiscale.
 
     Example:
@@ -409,7 +409,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    vat_code: str
+    vat_code: str = ""
     """ Partita Iva.
 
     Example:
@@ -420,7 +420,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    e_invoice_dest_code: str
+    e_invoice_dest_code: str = ""
     """ Codice destinatario o PEC per l'invio della fattura elettronica.
 
     Example:
@@ -431,7 +431,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    telephone: str
+    telephone: str = ""
     """ Numero di telefono.
 
     Example:
@@ -442,7 +442,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    mobile_phone: str
+    mobile_phone: str = ""
     """ Numero di cellulare.
 
     Example:
@@ -453,7 +453,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    fax: str
+    fax: str = ""
     """ Numero di fax.
 
     Example:
@@ -464,7 +464,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    email: str
+    email: str = ""
     """ Indirizzo e-mail.
 
     Example:
@@ -475,7 +475,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-    pec: str    
+    pec: str = ""
     """ Indirizzo PEC.
 
     Example:
@@ -486,7 +486,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
     
-    reference: str
+    reference: str = ""
     """ Persona di riferimento.
 
     Example:
@@ -588,7 +588,7 @@ class WithholdingTax(XMLMapper):
         "name_extras": "WithholdingTaxNameB",
     }
 
-    rate1: float
+    rate1: float = 0
     """ Percentuale ritenuta d'acconto applicata [Numerico].
     
     Example:
@@ -599,7 +599,7 @@ class WithholdingTax(XMLMapper):
         ```
     """
 
-    rate2: float
+    rate2: float = 0
     """ Seconda percentuale della ritenuta d'acconto (es.: 20% del 50%) [Numerico].
     
     Example:
@@ -632,7 +632,7 @@ class WithholdingTax(XMLMapper):
         ```
     """
 
-    name_extras: str
+    name_extras: str = ""
     """ Descrizione altre ritenute (es.: "Ritenuta ENASARCO").
     
     Example:
@@ -656,7 +656,7 @@ class Contributions(XMLMapper):
         "vat_code": "ContribVatCode",
     }
 
-    description: str
+    description: str = ""
     """ Descrizione contributi previdenziali.
     
     Example:
@@ -722,7 +722,7 @@ class DocumentPDFFile(XMLMapper):
         "content": "#TEXT",
     }
 
-    filename: str
+    filename: str = ""
     """ Nome file PDF. 
     
     Example:
@@ -733,7 +733,7 @@ class DocumentPDFFile(XMLMapper):
         ```
     """
 
-    content: str
+    content: str = ""
     """ Contenuto file codificato in base64.
     
     Example:
@@ -797,7 +797,7 @@ class Document(XMLMapper):
         "pdf": Field(DocumentPDFFile, tag="Pdf"),
     }
 
-    rows: list["Product"]
+    rows: list["Product"] = field(default_factory=list)
     """ Lista dei prodotti o delle note contenute nel documento. 
     
     Example:
@@ -808,7 +808,7 @@ class Document(XMLMapper):
         ```
     """
 
-    payments: list["Payment"]
+    payments: list["Payment"] = field(default_factory=list)
     """ Lista di scadenze di pagamento del documento.
     
     Example:
@@ -819,7 +819,7 @@ class Document(XMLMapper):
         ```
     """
 
-    date: str
+    date: str = ""
     """ Data del documento. 
     
     Example:
@@ -830,7 +830,7 @@ class Document(XMLMapper):
         ```
     """
 
-    number: str
+    number: str = ""
     """ Numero del documento. 
     
     Example:
@@ -841,7 +841,7 @@ class Document(XMLMapper):
         ```
     """
 
-    numbering: Optional[str] = None
+    numbering: Optional[str] = ""
     """ Numerazione documento ( /a, /b, etc.). Se omesso, l'importazione userà la numerazione scelta nelle relative impostazioni.
     
     Example:
@@ -991,7 +991,7 @@ class Document(XMLMapper):
         ```
     """
 
-    total: Optional[float] = None
+    total: float = 0
     """ Totale documento [Valuta]. Ignorato in importazione.
 
     Example:
@@ -1002,7 +1002,7 @@ class Document(XMLMapper):
         ```
     """
 
-    total_paid: Optional[float] = None
+    total_paid: float = 0
     """ Importo acconto già versato (va usato solo nei documenti che non prevedono l'indicazione dei singoli Payment).
 
     Example:
@@ -1024,7 +1024,7 @@ class Document(XMLMapper):
         ```
     """
 
-    total_subject_to_withholding_tax: Optional[float] = None
+    total_subject_to_withholding_tax: float = 0
     """ Totale imponibile per ritenuta d'acconto [Numerico].
 
     Example:
@@ -1054,7 +1054,7 @@ class Document(XMLMapper):
         ```
     """
 
-    delayed_vat_description: Optional[str] = None
+    delayed_vat_description: str = ""
     """ Causale Iva ad esigibilità differita.
 
     Example:
@@ -1077,7 +1077,7 @@ class Document(XMLMapper):
     """
 
 
-    warehouse: Optional[str] = None
+    warehouse: str = ""
     """ Denominazione del magazzino movimentato.
 
     Example:
@@ -1088,7 +1088,7 @@ class Document(XMLMapper):
         ```
     """
 
-    price_list: Optional[str] = None
+    price_list: str = ""
     """ Denominazione del listino prezzi usato.
 
     Example:
@@ -1100,7 +1100,7 @@ class Document(XMLMapper):
     """
 
 
-    payment_name: Optional[str] = None
+    payment_name: str = ""
     """ Nome pagamento (deve essere già presente nella tabella "Tipi pagamento" di Easyfatt).
 
     Example:
@@ -1111,7 +1111,7 @@ class Document(XMLMapper):
         ```
     """
 
-    payment_bank: Optional[str] = None
+    payment_bank: str = ""
     """ Banca pagamento.
 
     Example:
@@ -1122,7 +1122,7 @@ class Document(XMLMapper):
         ```
     """
 
-    sales_agent: Optional[str] = None
+    sales_agent: str = ""
     """ Nome dell'agente venditore (deve corrispondere ad un nominativo già presente nella tabella degli agenti).
 
     Example:
@@ -1133,7 +1133,7 @@ class Document(XMLMapper):
         ```
     """
 
-    expected_conclusion: Optional[str] = "2999-12-31"
+    expected_conclusion: str = "2999-12-31"
     """ Data di conclusione prevista (usato esclusivamente negli ordini clienti e fornitori) [Data].
 
     Example:
@@ -1144,7 +1144,7 @@ class Document(XMLMapper):
         ```
     """
 
-    reference: Optional[str] = None
+    reference: str = ""
     """ Causale del documento.
     
     Example:

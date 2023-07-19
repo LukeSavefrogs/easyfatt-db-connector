@@ -14,7 +14,7 @@ class VatCode(XMLMapper):
         "vat_class": "@Class",
     }
     
-    code: str
+    code: str = ""
     """ Codice IVA (deve essere già presente nella tabella "Categorie Iva" dell'applicazione). 
     
     Attenzione, non si tratta del valore percenutale di tassazione.
@@ -27,7 +27,7 @@ class VatCode(XMLMapper):
         ```
     """
 
-    description: str
+    description: str = ""
     """ Descrizione libera del codice Iva.
     
     Example:
@@ -38,7 +38,7 @@ class VatCode(XMLMapper):
         ```
     """
 
-    percentage: str
+    percentage: str = ""
     """ Percentuale tassazione applicata.
     
     Example:
@@ -49,7 +49,7 @@ class VatCode(XMLMapper):
         ```
     """
 
-    vat_class: str
+    vat_class: str = ""
     """ Classe: imponibile, non imponibile, intra-ue, extra-ue, esente, escluso, fuori campo, iva non esposta, rev. charge.
     
     Example:

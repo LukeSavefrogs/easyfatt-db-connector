@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 import lxml.etree as ET
 
 from easyfatt_db_connector.xml.common import Field, XMLMapper
@@ -32,7 +33,7 @@ class Product(XMLMapper):
         "commission_percentage": "CommissionPerc",
     }
 
-    code: str
+    code: str = ""
     """ Codice prodotto.
     
     Example:
@@ -43,7 +44,7 @@ class Product(XMLMapper):
         ```
     """
 
-    supplier_code: str
+    supplier_code: str = ""
     """ Codice prodotto del fornitore.
     
     Example:
@@ -54,7 +55,7 @@ class Product(XMLMapper):
         ```
     """
 
-    description: str
+    description: str = ""
     """ Descrizione prodotto o nota.
     
     Example:
@@ -65,7 +66,9 @@ class Product(XMLMapper):
         ```
     """
 
-    quantity: int
+    # I know it's strange, but in the XML schema the default is 0: 
+    # `<xs:element name="Qty" type="xs:decimal" minOccurs="0" default="0"/>`
+    quantity: int = 0
     """ Quantità prodotti.
     
     Example:
@@ -76,7 +79,7 @@ class Product(XMLMapper):
         ```
     """
 
-    unit_measure: str
+    unit_measure: str = ""
     """ Unità di misura della quantità.
     
     Example:
@@ -87,7 +90,7 @@ class Product(XMLMapper):
         ```
     """
 
-    size: str
+    size: str = ""
     """ Taglia (usato nel settore dell'abbigliamento).
     
     Example:
@@ -98,7 +101,7 @@ class Product(XMLMapper):
         ```
     """
 
-    color: str
+    color: str = ""
     """ Colore (usato nel settore dell'abbigliamento).
     
     Example:
@@ -109,7 +112,7 @@ class Product(XMLMapper):
         ```
     """
 
-    lot: str
+    lot: str = ""
     """ Lotto.
     
     Example:
@@ -120,7 +123,7 @@ class Product(XMLMapper):
         ```
     """
 
-    expiry_date: str
+    expiry_date: str = "2999-12-31"
     """ Data scadenza lotto [Data].
     
     Example:
@@ -131,7 +134,7 @@ class Product(XMLMapper):
         ```
     """
 
-    serial: str
+    serial: str = ""
     """ Codice seriale
     
     Example:
@@ -142,7 +145,7 @@ class Product(XMLMapper):
         ```
     """
 
-    price: float
+    price: float = 0
     """ Prezzo unitario [Valuta].
     
     Example:
@@ -153,7 +156,7 @@ class Product(XMLMapper):
         ```
     """
 
-    discounts: str
+    discounts: str = ""
     """ Sconti (es: "20+5.5%").
     
     Example:
@@ -164,7 +167,7 @@ class Product(XMLMapper):
         ```
     """
 
-    eco_fee: str
+    eco_fee: float = 0
     """ Importo dell'eco-contributo unitario associato all'articolo.
     
     Example:
@@ -175,7 +178,7 @@ class Product(XMLMapper):
         ```
     """
 
-    vat_info: "VatCode"
+    vat_info: Optional["VatCode"] = None
     """ Informazioni sull'IVA applicata al prodotto.
     
     Example:
@@ -186,7 +189,7 @@ class Product(XMLMapper):
         ```
     """
 
-    total: str
+    total: str = ""
     """ Importo complessivo della riga [Valuta]. Ignorato in importazione.
     
     Example:
@@ -197,7 +200,7 @@ class Product(XMLMapper):
         ```
     """
 
-    withholding_tax: bool
+    withholding_tax: Optional[bool] = None
     """ Ritenuta d'acconto applicata.
     
     Example:
@@ -208,7 +211,7 @@ class Product(XMLMapper):
         ```
     """
 
-    stock: bool
+    stock: Optional[bool] = None
     """ Movimentazione magazzino.
     
     Example:
@@ -219,7 +222,7 @@ class Product(XMLMapper):
         ```
     """
 
-    notes: str
+    notes: str = ""
     """ Note della riga.
     
     Example:
@@ -230,7 +233,7 @@ class Product(XMLMapper):
         ```
     """
 
-    commission_percentage: float
+    commission_percentage: float = 0
     """ Percentuale provvigione agente.
     
     Example:
