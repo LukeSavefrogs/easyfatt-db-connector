@@ -39,29 +39,44 @@ class XMLMapper(object):
         return cls.__xml_name__ if getattr(cls, "__xml_name__", None) else cls.__name__
 
     @classmethod
-    def from_xml_string(cls, string: str, convert_types=True):
-        """ Creates an instance of the class from an XML text. """
+    def from_xml_string(cls, string: str, convert_types=True, *, _warn_untracked=True):
+        """ Creates an instance of the class from an XML text.
+
+        Args:
+            string (str): The XML text to parse.
+            convert_types (bool, optional): Whether to convert the types of the fields. Defaults to True.
+            _warn_untracked (bool, optional): Whether to warn if there are untracked children (for internal use only). Defaults to True.
+        
+        Raises:
+            NotImplementedError: If the class does not have an `__xml_mapping__` attribute or if is not a dictionary.
+            TypeError: If the value of the `__xml_mapping__` attribute is not valid.
+            TypeConversionError: If the type of the field is not supported.
+            
+        Returns:
+            XMLMapper: An instance of the class.
+        """
         return cls.from_xml(
             ET.fromstring(string),
             convert_types=convert_types,
+            _warn_untracked=_warn_untracked,
         )
 
     @classmethod
-    def from_xml(cls, element: ET._Element, warn_untracked=True, convert_types=True):
-        """ Creates an instance of the class from an XML text. 
+    def from_xml(cls, element: ET._Element, convert_types=True, *, _warn_untracked=True):
+        """ Creates an instance of the class from an XML text.
         
         Args:
             element (ET._Element): The XML element to parse.
-            warn_untracked (bool, optional): Whether to warn if there are untracked children. Defaults to True.
             convert_types (bool, optional): Whether to convert the types of the fields. Defaults to True.
+            _warn_untracked (bool, optional): Whether to warn if there are untracked children (for internal use only). Defaults to True.
             
-            Raises:
-                NotImplementedError: If the class does not have an `__xml_mapping__` attribute or if is not a dictionary.
-                TypeError: If the value of the `__xml_mapping__` attribute is not valid.
-                TypeConversionError: If the type of the field is not supported.
-                
-            Returns:
-                XMLMapper: An instance of the class.
+        Raises:
+            NotImplementedError: If the class does not have an `__xml_mapping__` attribute or if is not a dictionary.
+            TypeError: If the value of the `__xml_mapping__` attribute is not valid.
+            TypeConversionError: If the type of the field is not supported.
+            
+        Returns:
+            XMLMapper: An instance of the class.
         """
         if getattr(cls, "__xml_mapping__", None) is None and type(cls.__xml_mapping__) != dict:
             raise NotImplementedError(
@@ -88,7 +103,7 @@ class XMLMapper(object):
             child.tag for child in element.iterchildren() if child.tag not in child_tags
         ]
 
-        if untracked_children and warn_untracked:
+        if untracked_children and _warn_untracked:
             print(
                 f"\nWARNING: A total of {len(untracked_children)} children are not tracked ({', '.join(untracked_children)}) in the `{cls.__name__}.__xml_mapping__` class attribute.\n"
             )
@@ -103,7 +118,7 @@ class XMLMapper(object):
                 setattr(
                     xml_object,
                     attr,
-                    target.target.from_xml(element, warn_untracked=False, convert_types=convert_types),
+                    target.target.from_xml(element, convert_types=convert_types, _warn_untracked=False),
                 )
 
             elif isinstance(target, Field):
@@ -119,7 +134,7 @@ class XMLMapper(object):
                     )
 
                     children_obj = [
-                        target.child.target.from_xml(child_xml, warn_untracked=warn_untracked, convert_types=convert_types)
+                        target.child.target.from_xml(child_xml, convert_types=convert_types, _warn_untracked=_warn_untracked)
                         for child_xml in children
                     ]
 
@@ -131,7 +146,7 @@ class XMLMapper(object):
                         setattr(
                             xml_object,
                             attr,
-                            target.target.from_xml(child_element, warn_untracked=warn_untracked, convert_types=convert_types),
+                            target.target.from_xml(child_element, convert_types=convert_types, _warn_untracked=_warn_untracked),
                         )
             else:
                 element_text = ""
