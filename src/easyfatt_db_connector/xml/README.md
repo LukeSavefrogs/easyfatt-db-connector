@@ -2,6 +2,26 @@
 
 Questo modulo permette di leggere il tracciato XML dei **documenti esportati da Easyfatt** e trasformarlo in una serie di **oggetti Python**.
 
+> Dalla documentazione ufficiale:
+>
+> "_Questa funzione si applica ai seguenti tipi di documenti:_
+>
+> - _Fattura_
+> - _Fattura pro-forma_
+> - _Parcella_
+> - _Avviso di parcella_
+> - _Vendita al banco_
+> - _Ordine cliente_
+> - _Documento di trasporto_
+> - _Ordine fornitore_
+> - _Rapporto d'intervento_
+> - _Nota di credito_
+> - _Nota di debito_
+> - _Preventivo_
+> - _Ricevuta fiscale_
+> - _Preventivo fornitore_
+> - _Arrivi merce fornitore_"
+
 Ad esempio, il seguente codice leggerà il file `fatture.DefXml` e restituirà i dati desiderati riguardo i documenti definiti all'interno:
 
 ```python
