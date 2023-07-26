@@ -863,7 +863,7 @@ class Document(XMLMapper):
         ```
     """
 
-    delivery: Optional[DeliveryInfo] = None
+    delivery: DeliveryInfo = field(default_factory=DeliveryInfo)
     """ Informazioni aggiuntive sulla consegna o spedizione.
 
     Example:
@@ -879,7 +879,7 @@ class Document(XMLMapper):
         ```
     """
 
-    transport: Optional[TransportInfo] = None
+    transport: TransportInfo = field(default_factory=TransportInfo)
     """ Informazioni aggiuntive sul trasporto.
 
     Example:
@@ -897,7 +897,7 @@ class Document(XMLMapper):
         ```
     """
 
-    customer: Optional[CustomerInfo] = None
+    customer: CustomerInfo = field(default_factory=CustomerInfo)
     """ Informazioni aggiuntive sull'intestatario del documento.
     
     Questo può essere cliente o fornitore a seconda del tipo di documento.
@@ -915,7 +915,7 @@ class Document(XMLMapper):
         ```
     """
 
-    notes: Optional[DocumentNotes] = None
+    notes: DocumentNotes = field(default_factory=DocumentNotes)
     """ Note aggiuntive sul documento.
 
     Example:
@@ -942,7 +942,7 @@ class Document(XMLMapper):
         ```
     """
 
-    cost_vat_code: Optional[VatCode] = None
+    cost_vat_code: VatCode = field(default_factory=VatCode)
     """ Codice IVA spese aggiuntive (deve essere già presente nella tabella "Categorie Iva" dell'applicazione).
     
     Il codice è accompagnato dalle seguenti proprietà, il cui uso è facoltativo:
@@ -1035,10 +1035,10 @@ class Document(XMLMapper):
         ```
     """
 
-    withholding_tax: Optional[WithholdingTax] = None
+    withholding_tax: WithholdingTax = field(default_factory=WithholdingTax)
     """ Informazioni sulla ritenuta d'acconto. """
 
-    contributions: Optional[Contributions] = None
+    contributions: Contributions = field(default_factory=Contributions)
     """ Informazioni sui contributi previdenziali. """
 
     # ----------------------------------
@@ -1155,7 +1155,7 @@ class Document(XMLMapper):
         ```
     """
 
-    pdf: Optional[DocumentPDFFile] = None
+    pdf: DocumentPDFFile = field(default_factory=DocumentPDFFile)
     """ Documento in formato Pdf condificato Base64.
 
     Example:
@@ -1319,7 +1319,7 @@ if __name__ == "__main__":
 
     document2 = Document.from_xml_string(xml)
     document.number = "TEST2"
-    
+
     print(f"Same object              : {document == document2}")
     unique_documents = set([document, document, document2])
     print(f"Count of unique documents: {len(unique_documents)}")
