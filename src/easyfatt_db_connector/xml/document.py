@@ -33,7 +33,7 @@ DocumentType: TypeAlias = Literal[
 ]
 
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class Payment(XMLMapper):
     """Campi nelle righe di pagamento (elementi `<Payment>`)."""
     __xml_name__ = "Payment"
@@ -89,7 +89,7 @@ class Payment(XMLMapper):
         ```
     """
     
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class DeliveryInfo(XMLMapper):
 	""" Campi nelle righe di consegna (elementi `<Delivery*>`).
     
@@ -174,7 +174,7 @@ class DeliveryInfo(XMLMapper):
 		```
 	"""
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class TransportInfo(XMLMapper):
     """ Campi nelle righe di trasporto (elementi `<Transport*>`, `<Shipment>`, ecc). """
 
@@ -277,7 +277,7 @@ class TransportInfo(XMLMapper):
         ```
     """
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class CustomerInfo(XMLMapper):
     """ Campi del'intestatario del documento. 
     
@@ -497,7 +497,7 @@ class CustomerInfo(XMLMapper):
         ```
     """
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class DocumentNotes(XMLMapper):
     """ Campi note/commenti del documento. """
 
@@ -576,7 +576,7 @@ class DocumentNotes(XMLMapper):
         ```
     """
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class WithholdingTax(XMLMapper):
     """ Campi ritenute d'acconto. """
 
@@ -644,7 +644,7 @@ class WithholdingTax(XMLMapper):
     """
 
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class Contributions(XMLMapper):
     """ Campi contributi previdenziali. """
 
@@ -712,7 +712,7 @@ class Contributions(XMLMapper):
     """
 
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class DocumentPDFFile(XMLMapper):
     """ Campo `<Pdf>`. """
 
@@ -745,7 +745,7 @@ class DocumentPDFFile(XMLMapper):
     """
     
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class Document(XMLMapper):
     """ Dati del documento corrente (elementi `<Document>`).
 
@@ -1312,3 +1312,14 @@ if __name__ == "__main__":
     print(f"Document VatCode percentage is : {document.type}")
     print(f"Document first product is      : {document.rows[0].description}")
     print(f"Document first payment is      : {document.payments[0].amount}\n")
+
+    print(f"Same object              : {document == document}")
+    unique_documents = set([document, document])
+    print(f"Count of unique documents: {len(unique_documents)}")
+
+    document2 = Document.from_xml_string(xml)
+    document.number = "TEST2"
+    
+    print(f"Same object              : {document == document2}")
+    unique_documents = set([document, document, document2])
+    print(f"Count of unique documents: {len(unique_documents)}")

@@ -33,6 +33,12 @@ class XMLMapper(object):
 
     def __repr__(self) -> str:
         return self.__str__()
+    
+    def __hash__(self) -> int:
+        """ Returns a hash of the object. """
+        return hash((type(self),) + tuple(
+            [tuple(value) if type(value) == list else value for value in self.__dict__.values()]
+        ))
 
     @classmethod
     def _get_xml_tag(cls) -> str:

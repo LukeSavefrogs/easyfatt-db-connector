@@ -4,7 +4,7 @@ import lxml.etree as ET
 from easyfatt_db_connector.xml.common import XMLMapper
 
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class VatCode(XMLMapper):
     """ Informazioni sull'IVA applicata al prodotto. """
     __xml_mapping__ = {

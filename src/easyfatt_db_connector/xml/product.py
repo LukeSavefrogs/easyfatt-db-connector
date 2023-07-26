@@ -6,7 +6,7 @@ from easyfatt_db_connector.xml.common import Field, XMLMapper
 from easyfatt_db_connector.xml.vat_code import VatCode
 
 
-@dataclass(init=False, repr=False)
+@dataclass(eq=False, init=False, repr=False)
 class Product(XMLMapper):
     """ Campi nelle righe del documento (elementi <Row>). """
     __xml_name__ = "Row"

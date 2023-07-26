@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from easyfatt_db_connector.xml.common import XMLMapper
 
-@dataclass(init=False)
+@dataclass(eq=False, init=False)
 class Company(XMLMapper):
     """ Dati dell'azienda che ha originato il file. 
     
