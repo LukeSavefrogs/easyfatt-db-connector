@@ -35,4 +35,3 @@ Per questo motivo sono state mantenute le stesse convenzioni specificate nella s
 ## Limitazioni
 
 - Al momento della scrittura di questo documento, è possibile solamente **leggere** i file XML esportati da Easyfatt, non è possibile crearli o modificarli.
-- Non sono stati implementati tutti i tag presenti nel tracciato XML, quindi si potrebbero verificare dei `WARNING` durante la lettura del file. Questi `WARNING` non influiscono sul corretto funzionamento del programma, ma è consigliato controllare che i dati letti siano corretti.
