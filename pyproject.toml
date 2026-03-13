@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "easyfatt-db-connector"
-version = "0.3.0"
+version = "0.4.0"
 description = ""
 authors = ["Luca Salvarani <lucasalvarani99@gmail.com>"]
 license = "MIT"
@@ -10,7 +10,7 @@ repository = "https://github.com/LukeSavefrogs/easyfatt-db-connector/"
 homepage = "https://github.com/LukeSavefrogs/easyfatt-db-connector/"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.10,<4"
 requests = "^2.30.0"
 fdb = "^2.0.2"
 sqlalchemy-firebird = "^2.0.0"
